@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/01/27 13:24:15 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/01/31 15:56:44 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,5 +45,8 @@ void	*whoami(void *arg);
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
 void	nap(int secs);
+void	inittask(t_info *info, int pnum);
+void	asigntask(t_philos *philo);
+void	printtask(t_philos *philo);
 
 #endif
