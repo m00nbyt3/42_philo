@@ -6,15 +6,15 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/01/31 16:39:35 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/03 12:49:17 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 void	*whoami(void *arg);
-void	inittask(t_info *info, int pnum);
-void	asigntask(t_philos *philo);
+void	inittask(t_info *info, t_philos *philos, int pnum);
+void	launchtime (t_philos *philo);
 void	printtask(t_philos *philo);
 
 int	main(int argc, char const *argv[])
@@ -22,7 +22,6 @@ int	main(int argc, char const *argv[])
 	t_philos	*philos;
 	t_info		info;
 	int pnum;
-	int	timeto;
 	int j;
 	
 
@@ -31,17 +30,16 @@ int	main(int argc, char const *argv[])
 		printf("ERROR\n");
 		return (0);
 	}
-	//pthread_mutex_init(&mtx, 0);
 	pnum = ft_atoi(argv[1]);
-	timeto = ft_atoi(argv[2]);
+	info.ttsleep = ft_atoi(argv[2]);
 	philos = malloc(pnum * sizeof(t_philos));
-	nap(timeto);
-	inittask(&info, pnum);
+	inittask(&info, philos, pnum);
 	j = 0;
 	while (j < pnum)
 	{
 		philos[j].id = j;
 		philos[j].status = &info;
+		usleep(50);
 		pthread_create(&philos[j].th, 0, whoami, &philos[j]);
 		j++;
 	}
@@ -59,63 +57,70 @@ void	*whoami(void *arg)
 	t_philos *philo;
  
 	philo = (t_philos *)arg;
-	asigntask(philo);
-	printtask(philo);
+	launchtime (philo);
 	return 0;
 }
 
-void	inittask(t_info *info, int pnum)
-{
-	int	tmp;
-
-	info->iseating = malloc(pnum * sizeof(int));
-	tmp = 0;
-	while(tmp++ != pnum)
-		info->iseating[tmp] = 0;
-	info->isthinking = malloc(pnum * sizeof(int));
-	tmp = 0;
-	while(tmp++ != pnum)
-		info->isthinking[tmp] = 0;
-	info->issleeping = malloc(pnum * sizeof(int));
-	tmp = 0;
-	while(tmp++ != pnum)
-		info->issleeping[tmp] = 0;
-	info->pnum = pnum;
-}
-
-void	asigntask(t_philos *philo)
+void	inittask(t_info *info, t_philos *philos, int pnum)
 {
 	int i;
 
+	info->pnum = pnum;
+	info->fork = malloc (pnum * sizeof(int));
 	i = 0;
-	while (philo->status->iseating[i] == 0 && i != (philo->id + 1))
-		if (i++ == (philo->id))
-		{
-			philo->status->iseating[philo->id] = 1;
-			return ;
-		}
-	i = 0;
-	while (philo->status->isthinking[i] == 0 && i != (philo->id + 1))
-		if (i++ == (philo->id))
-		{
-			philo->status->isthinking[philo->id] = 1;
-			return ;
-		}
-	i = 0;
-	while (philo->status->issleeping[i] == 0 && i != (philo->id + 1))
-		if (i++ == (philo->id))
-		{
-			philo->status->issleeping[philo->id] = 1;
-			return ;
-		}
+	while (i < pnum)
+	{
+		info->fork[i] = 1;
+		pthread_mutex_init(&philos[i].mtx, 0);
+		if (i != 0)
+			philos[i - 1].mtx2 = &philos[i].mtx;
+		if (i == pnum - 1)
+			philos[i].mtx2 = &philos[0].mtx;
+		i++;
+	}
 }
 
-void	printtask(t_philos *philo)
+void	launchtime (t_philos *philo)
 {
-	if (philo->status->iseating[philo->id] == 1)
-		printf("Philosopher %d is eating\n", philo->id + 1);
-	if (philo->status->isthinking[philo->id] == 1)
-			printf("Philosopher %d is thinking\n", philo->id + 1);
-	if (philo->status->issleeping[philo->id] == 1)
-		printf("Philosopher %d is sleeping\n", philo->id + 1);
+	int	tot;
+	int steal;
+
+	steal = philo->id + 1;
+	if (philo->id == (philo->status->pnum - 1))
+		steal = 0;
+	tot = 0;
+	while (tot < 2)
+	{
+		//printf("mtx1\n");
+
+		pthread_mutex_lock(&philo->mtx);
+		if (philo->status->fork[philo->id])
+		{
+			printf("Philospher %d has taken a fork 🥄\n", philo->id);
+			philo->status->fork[philo->id] = 0;
+			tot++;
+		}
+		//printf("mtx2\n");
+
+		pthread_mutex_unlock(&philo->mtx);
+		pthread_mutex_lock(philo->mtx2);
+		if (philo->status->fork[steal])
+		{
+			printf("Philospher %d has taken a fork 🥄\n", philo->id);
+			philo->status->fork[steal] = 0;
+			tot++;
+		}
+		//printf("value %d\n", philo->status->fork[philo->id + 1]);
+		//printf("here\n");
+		pthread_mutex_unlock(philo->mtx2);
+	}
+	printf("Philosopher %d is eating 🍴\n", philo->id);
+	nap(philo->status->ttsleep);
+	printf("Philosopher %d is sleeping 💤\n", philo->id);
+	pthread_mutex_lock(&philo->mtx);
+	pthread_mutex_lock(philo->mtx2);
+	philo->status->fork[philo->id] = 1;
+	philo->status->fork[philo->id + 1] = 1;
+	pthread_mutex_unlock(&philo->mtx);
+	pthread_mutex_unlock(philo->mtx2);
 }
