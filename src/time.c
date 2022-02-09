@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:00:08 by ycarro            #+#    #+#             */
-/*   Updated: 2022/01/25 12:58:54 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/09 16:08:54 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 void	nap(int secs)
 {
-
-	struct 	timeval ctime;
-	long	orig;
-	long	new;
+	struct timeval	ctime;
+	long			orig;
+	long			new;
 
 	gettimeofday(&ctime, NULL);
 	orig = ctime.tv_sec;
@@ -32,10 +31,10 @@ void	nap(int secs)
 
 void	nap_old(int secs)
 {
-	struct timeval ctime;
-	long orig;
-	long end;
-	long tmp;
+	struct timeval	ctime;
+	long			orig;
+	long			end;
+	long			tmp;
 
 	secs--;
 	gettimeofday(&ctime, NULL);

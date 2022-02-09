@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/09 15:32:37 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/09 16:07:05 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,15 @@
 
 void	*whoami(void *arg);
 void	inittask(t_info *info, int pnum);
-void	launchtime (t_philos *philo, t_iforks *iforks);
+void	launchtime(t_philos *philo, t_iforks *iforks);
 void	canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
-
 
 int	main(int argc, char const *argv[])
 {
 	t_philos	*philos;
 	t_info		info;
-	int pnum;
-	int j;
+	int			pnum;
+	int			j;
 
 	if (argc != 3)
 	{
@@ -49,7 +48,7 @@ int	main(int argc, char const *argv[])
 		pthread_join(philos[j].th, 0);
 		j++;
 	}
-	return 0;
+	return (0);
 }
 
 void	*whoami(void *arg)
@@ -65,12 +64,12 @@ void	*whoami(void *arg)
 		iforks.right = philo->id + 1;
 	iforks.tot = 0;
 	launchtime (philo, &iforks);
-	return 0;
+	return (0);
 }
 
 void	inittask(t_info *info, int pnum)
 {
-	int i;
+	int	i;
 
 	info->pnum = pnum;
 	info->fork = malloc (pnum * sizeof(int));
@@ -84,7 +83,7 @@ void	inittask(t_info *info, int pnum)
 	}
 }
 
-void	launchtime (t_philos *philo, t_iforks *iforks)
+void	launchtime(t_philos *philo, t_iforks *iforks)
 {
 	while (iforks->tot < 2)
 	{
@@ -93,7 +92,7 @@ void	launchtime (t_philos *philo, t_iforks *iforks)
 		{
 			canieat(philo, &iforks->tot, iforks->right, iforks->left);
 			if (iforks->tot == 2)
-				break;
+				break ;
 		}
 		pthread_mutex_unlock(&philo->status->mtx[iforks->left]);
 		pthread_mutex_lock(&philo->status->mtx[iforks->right]);
@@ -101,7 +100,7 @@ void	launchtime (t_philos *philo, t_iforks *iforks)
 		{
 			canieat(philo, &iforks->tot, iforks->left, iforks->right);
 			if (iforks->tot == 2)
-				break;
+				break ;
 		}
 		pthread_mutex_unlock(&philo->status->mtx[iforks->right]);
 	}
