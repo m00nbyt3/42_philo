@@ -6,16 +6,17 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/09 16:07:05 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/10 12:26:21 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*whoami(void *arg);
+void	*philolife(void *arg);
 void	inittask(t_info *info, int pnum);
 void	launchtime(t_philos *philo, t_iforks *iforks);
 void	canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
+void	timepassed(t_philos *philos);
 
 int	main(int argc, char const *argv[])
 {
@@ -24,13 +25,15 @@ int	main(int argc, char const *argv[])
 	int			pnum;
 	int			j;
 
-	if (argc != 3)
+	if (argc < 5 || argc > 6)
 	{
 		printf("ERROR\n");
 		return (0);
 	}
 	pnum = ft_atoi(argv[1]);
-	info.ttsleep = ft_atoi(argv[2]);
+	info.ttdie = ft_atoi(argv[2]);
+	info.tteat = ft_atoi(argv[3]);
+	info.ttsleep = ft_atoi(argv[4]);;
 	philos = malloc((pnum) * sizeof(t_philos));
 	inittask(&info, pnum);
 	j = 0;
@@ -39,19 +42,22 @@ int	main(int argc, char const *argv[])
 		philos[j].id = j;
 		philos[j].status = &info;
 		usleep(50);
-		pthread_create(&philos[j].th, 0, whoami, &philos[j]);
+		gettimeofday(&(info.ctime), NULL);
+		philos[j].lasteat = info.ctime.tv_sec;
+		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
 		j++;
 	}
 	j = 0;
-	while (j < pnum)
+	/*while (j < pnum)
 	{
 		pthread_join(philos[j].th, 0);
 		j++;
-	}
+	}*/
+	timepassed(philos);
 	return (0);
 }
 
-void	*whoami(void *arg)
+void	*philolife(void *arg)
 {
 	t_philos	*philo;
 	t_iforks	iforks;
@@ -63,7 +69,13 @@ void	*whoami(void *arg)
 	else
 		iforks.right = philo->id + 1;
 	iforks.tot = 0;
-	launchtime (philo, &iforks);
+	while (1)
+	{
+		launchtime (philo, &iforks);
+		printf("Philosopher %d is sleeping 💤\n", philo->id);
+		nap(philo->status->ttsleep);
+		printf("Philosopher %d is thinking 🤔\n", philo->id);
+	}
 	return (0);
 }
 
@@ -85,6 +97,7 @@ void	inittask(t_info *info, int pnum)
 
 void	launchtime(t_philos *philo, t_iforks *iforks)
 {
+	iforks->tot = 0;
 	while (iforks->tot < 2)
 	{
 		pthread_mutex_lock(&philo->status->mtx[iforks->left]);
@@ -108,17 +121,42 @@ void	launchtime(t_philos *philo, t_iforks *iforks)
 
 void	canieat(t_philos *philo, int *tot, int fstfork, int lstfork)
 {
-	printf("Philospher %d has taken a fork🥄\n", philo->id);
+	printf("Philospher %d has taken a fork 🥄\n", philo->id);
 	philo->status->fork[lstfork] = 0;
 	(*tot)++;
 	if (*tot == 2)
 	{
 		printf("Philosopher %d is eating 🍴\n", philo->id);
-		nap(philo->status->ttsleep);
+		nap(philo->status->tteat);
 		printf("(DEBUG) Philosopher %d finished eating :P\n", philo->id);
+		gettimeofday(&(philo->status->ctime), NULL);
+		philo->lasteat = philo->status->ctime.tv_sec;
 		philo->status->fork[fstfork] = 1;
 		philo->status->fork[lstfork] = 1;
-		//printf("Philosopher %d is sleeping💤\n", philo->id);
 		pthread_mutex_unlock(&philo->status->mtx[lstfork]);
+	}
+}
+
+void	timepassed(t_philos *philos)
+{
+	int	i;
+	long	actual;
+
+	while (1)
+	{
+		usleep(5000);
+		i = 0;		
+		while (i < philos[0].status->pnum)
+		{
+			gettimeofday(&(philos[0].status->ctime), NULL);
+			actual = philos[0].status->ctime.tv_sec;
+			actual -= philos[i].lasteat;
+			if (actual > philos[i].status->ttdie)
+			{
+				printf("Philosopher %d died 💀\n", philos[i].id);
+				exit(0);
+			}
+			i++;
+		}
 	}
 }
