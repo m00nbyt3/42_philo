@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/10 12:27:13 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/10 15:02:35 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@
 typedef struct s_info
 {
 	struct timeval	ctime;
+	long			inittime;
 	int				pnum;
 	int				*fork;
 	pthread_mutex_t	*mtx;
 	int				tteat;
 	int				ttsleep;
-	int				ttdie;
+	long			ttdie;
 }				t_info;
 
 typedef struct s_philos
@@ -39,6 +40,7 @@ typedef struct s_philos
 	pthread_t		th;
 	int				id;
 	long			lasteat;
+	long			showtime;
 	t_info			*status;
 
 }				t_philos;

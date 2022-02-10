@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:00:08 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/09 16:08:54 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/10 14:48:05 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,34 +19,12 @@ void	nap(int secs)
 	long			new;
 
 	gettimeofday(&ctime, NULL);
-	orig = ctime.tv_sec;
-	new = orig + secs;
+	orig = (ctime.tv_sec * 1000000) + ctime.tv_usec;
+	new = orig + (secs * 1000000);
 	usleep(secs * 1000000);
-	while (orig != new)
+	while (orig < new)
 	{
 		gettimeofday(&ctime, NULL);
-		orig = ctime.tv_sec;
-	}
-}
-
-void	nap_old(int secs)
-{
-	struct timeval	ctime;
-	long			orig;
-	long			end;
-	long			tmp;
-
-	secs--;
-	gettimeofday(&ctime, NULL);
-	orig = ctime.tv_sec;
-	printf("%ld\n", (orig % 10));
-	end = orig + 5;
-	while (orig != end)
-	{	
-		tmp = orig;
-		gettimeofday(&ctime, NULL);
-		orig = ctime.tv_sec;
-		if (orig != tmp)
-			printf("%ld\n", (orig % 10));
+		orig = (ctime.tv_sec * 1000000) + ctime.tv_usec;
 	}
 }

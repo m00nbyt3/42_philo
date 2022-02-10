@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/10 12:26:21 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/10 15:12:53 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	main(int argc, char const *argv[])
 		return (0);
 	}
 	pnum = ft_atoi(argv[1]);
-	info.ttdie = ft_atoi(argv[2]);
+	info.ttdie = ft_atoi(argv[2]) * 1000000;
 	info.tteat = ft_atoi(argv[3]);
 	info.ttsleep = ft_atoi(argv[4]);;
 	philos = malloc((pnum) * sizeof(t_philos));
@@ -43,7 +43,7 @@ int	main(int argc, char const *argv[])
 		philos[j].status = &info;
 		usleep(50);
 		gettimeofday(&(info.ctime), NULL);
-		philos[j].lasteat = info.ctime.tv_sec;
+		philos[j].lasteat = (info.ctime.tv_sec * 1000000) + info.ctime.tv_usec;
 		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
 		j++;
 	}
@@ -72,9 +72,15 @@ void	*philolife(void *arg)
 	while (1)
 	{
 		launchtime (philo, &iforks);
-		printf("Philosopher %d is sleeping 💤\n", philo->id);
+		gettimeofday(&(philo->status->ctime), NULL);
+		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
+		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
+		printf("%ld Philosopher %d is sleeping 💤\n", philo->showtime, philo->id);
 		nap(philo->status->ttsleep);
-		printf("Philosopher %d is thinking 🤔\n", philo->id);
+		gettimeofday(&(philo->status->ctime), NULL);
+		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
+		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
+		printf("%ld Philosopher %d is thinking 🤔\n", philo->showtime, philo->id);
 	}
 	return (0);
 }
@@ -93,6 +99,8 @@ void	inittask(t_info *info, int pnum)
 		pthread_mutex_init(&info->mtx[i], 0);
 		i++;
 	}
+	gettimeofday(&(info->ctime), NULL);
+	info->inittime = ((info->ctime.tv_sec * 1000000) + info->ctime.tv_usec) / 1000;
 }
 
 void	launchtime(t_philos *philo, t_iforks *iforks)
@@ -121,16 +129,21 @@ void	launchtime(t_philos *philo, t_iforks *iforks)
 
 void	canieat(t_philos *philo, int *tot, int fstfork, int lstfork)
 {
-	printf("Philospher %d has taken a fork 🥄\n", philo->id);
+	gettimeofday(&(philo->status->ctime), NULL);
+	philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
+	+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
+	printf("%ld Philospher %d has taken a fork 🥄\n", philo->showtime, philo->id);
 	philo->status->fork[lstfork] = 0;
 	(*tot)++;
 	if (*tot == 2)
 	{
-		printf("Philosopher %d is eating 🍴\n", philo->id);
-		nap(philo->status->tteat);
-		printf("(DEBUG) Philosopher %d finished eating :P\n", philo->id);
 		gettimeofday(&(philo->status->ctime), NULL);
-		philo->lasteat = philo->status->ctime.tv_sec;
+		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
+		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
+		printf("%ld Philosopher %d is eating 🍴\n", philo->showtime, philo->id);
+		nap(philo->status->tteat);
+		gettimeofday(&(philo->status->ctime), NULL);
+		philo->lasteat = (philo->status->ctime.tv_sec * 1000000) + philo->status->ctime.tv_usec;
 		philo->status->fork[fstfork] = 1;
 		philo->status->fork[lstfork] = 1;
 		pthread_mutex_unlock(&philo->status->mtx[lstfork]);
@@ -144,16 +157,19 @@ void	timepassed(t_philos *philos)
 
 	while (1)
 	{
-		usleep(5000);
+		nap(5 / 1000);
 		i = 0;		
 		while (i < philos[0].status->pnum)
 		{
 			gettimeofday(&(philos[0].status->ctime), NULL);
-			actual = philos[0].status->ctime.tv_sec;
+			actual = (philos[0].status->ctime.tv_sec * 1000000) + philos[0].status->ctime.tv_usec;
 			actual -= philos[i].lasteat;
-			if (actual > philos[i].status->ttdie)
+			if (actual >= philos[i].status->ttdie)
 			{
-				printf("Philosopher %d died 💀\n", philos[i].id);
+				gettimeofday(&(philos[0].status->ctime), NULL);
+				philos[0].showtime = (((philos[0].status->ctime.tv_sec * 1000000) \
+				+ philos[0].status->ctime.tv_usec) / 1000) - philos[0].status->inittime;
+				printf("%ld Philosopher %d died 💀\n", philos[0].showtime, philos[i].id);
 				exit(0);
 			}
 			i++;
