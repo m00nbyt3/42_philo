@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/10 15:02:35 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/15 15:01:43 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct s_info
 	int				tteat;
 	int				ttsleep;
 	long			ttdie;
+	int				finish;
 }				t_info;
 
 typedef struct s_philos
@@ -56,10 +57,10 @@ typedef struct s_iforks
 void	*philolife(void *arg);
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
-void	nap(int secs);
+int		nap(int secs, int *imdead);
 void	inittask(t_info *info, int pnum);
-void	launchtime(t_philos *philo, t_iforks *iforks);
-void	canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
+int		launchtime(t_philos *philo, t_iforks *iforks);
+int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
 
 #endif
