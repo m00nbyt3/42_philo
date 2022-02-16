@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/15 15:31:57 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/16 13:31:57 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	inittask(t_info *info, int pnum);
 int		launchtime(t_philos *philo, t_iforks *iforks);
 int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
+void	sprint(t_philos *philo, char *action);
 
 int	main(int argc, char const *argv[])
 {
@@ -31,7 +32,7 @@ int	main(int argc, char const *argv[])
 		return (0);
 	}
 	pnum = ft_atoi(argv[1]);
-	info.ttdie = ft_atoi(argv[2]) * 1000000;
+	info.ttdie = ft_atoi(argv[2]) * 1000;
 	info.tteat = ft_atoi(argv[3]);
 	info.ttsleep = ft_atoi(argv[4]);;
 	info.finish = 0;
@@ -76,16 +77,10 @@ void	*philolife(void *arg)
 			return (0);
 		if (launchtime (philo, &iforks))
 			return (0);
-		gettimeofday(&(philo->status->ctime), NULL);
-		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
-		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
-		printf("%ld Philosopher %d is sleeping 💤\n", philo->showtime, philo->id);
+		sprint(philo, PSLEEP);
 		if (nap(philo->status->ttsleep, &philo->status->finish))
 			return (0);
-		gettimeofday(&(philo->status->ctime), NULL);
-		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
-		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
-		printf("%ld Philosopher %d is thinking 🤔\n", philo->showtime, philo->id);
+		sprint(philo, PTHINK);
 	}
 	return (0);
 }
@@ -104,6 +99,7 @@ void	inittask(t_info *info, int pnum)
 		pthread_mutex_init(&info->mtx[i], 0);
 		i++;
 	}
+	pthread_mutex_init(&info->plock, 0);
 	gettimeofday(&(info->ctime), NULL);
 	info->inittime = ((info->ctime.tv_sec * 1000000) + info->ctime.tv_usec) / 1000;
 }
@@ -145,18 +141,12 @@ int	launchtime(t_philos *philo, t_iforks *iforks)
 
 int	canieat(t_philos *philo, int *tot, int fstfork, int lstfork)
 {
-	gettimeofday(&(philo->status->ctime), NULL);
-	philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
-	+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
-	printf("%ld Philospher %d has taken a fork 🥄\n", philo->showtime, philo->id);
+	sprint(philo, PTFORK);
 	philo->status->fork[lstfork] = 0;
 	(*tot)++;
 	if (*tot == 2)
 	{
-		gettimeofday(&(philo->status->ctime), NULL);
-		philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
-		+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
-		printf("%ld Philosopher %d is eating 🍴\n", philo->showtime, philo->id);
+		sprint(philo, PEAT);
 		if (nap(philo->status->tteat, &philo->status->finish))
 			return (1);
 		gettimeofday(&(philo->status->ctime), NULL);
@@ -185,13 +175,25 @@ void	timepassed(t_philos *philos)
 			if (actual >= philos[i].status->ttdie)
 			{
 				philos[i].status->finish = 1;
-				gettimeofday(&(philos[0].status->ctime), NULL);
-				philos[0].showtime = (((philos[0].status->ctime.tv_sec * 1000000) \
-				+ philos[0].status->ctime.tv_usec) / 1000) - philos[0].status->inittime;
-				printf("%ld Philosopher %d died 💀\n", philos[0].showtime, philos[i].id);
+				sprint(&philos[0], PDIE);
 				return ;
 			}
 			i++;
 		}
 	}
+}
+
+void	sprint(t_philos *philo, char *action)
+{
+	pthread_mutex_lock(&philo->status->plock);
+	if (philo->status->finish && action[19] != 'd')
+	{
+		pthread_mutex_unlock(&philo->status->plock);
+		return ;
+	}
+	gettimeofday(&(philo->status->ctime), NULL);
+	philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
+	+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
+	printf(action, philo->showtime, philo->id);
+	pthread_mutex_unlock(&philo->status->plock);
 }

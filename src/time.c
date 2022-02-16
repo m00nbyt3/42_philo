@@ -6,13 +6,13 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:00:08 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/15 15:33:34 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/16 11:02:14 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	nap(int secs, int *imdead)
+int	nap(long secs, int *imdead)
 {
 	struct timeval	ctime;
 	long			orig;
@@ -20,7 +20,7 @@ int	nap(int secs, int *imdead)
 
 	gettimeofday(&ctime, NULL);
 	orig = (ctime.tv_sec * 1000000) + ctime.tv_usec;
-	new = orig + (secs * 1000000);
+	new = orig + (secs * 1000);
 	while (orig < new)
 	{
 		usleep(10);
