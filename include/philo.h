@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/17 12:12:10 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/17 14:58:27 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,17 @@
 # include <pthread.h>
 # include <limits.h>
 # include <sys/time.h>
-# define PDIE "%ld Philosopher %d died 💀\n"
-# define PEAT "%ld Philosopher %d is eating 🍴\n"
-# define PTFORK "%ld Philospher %d has taken a fork 🥄\n"	
-# define PSLEEP "%ld Philosopher %d is sleeping 💤\n"
-# define PTHINK "%ld Philosopher %d is thinking 🤔\n"
+
+//Definitions
+# define PDIE "%ld %d died\n"
+# define PEAT "%ld %d is eating\n"
+# define PTFORK "%ld %d has taken a fork\n"	
+# define PSLEEP "%ld %d is sleeping\n"
+# define PTHINK "%ld %d is thinking\n"
 
 
 
 //Structs
-
 typedef struct s_info
 {
 	struct timeval	ctime;
@@ -52,7 +53,7 @@ typedef struct s_philos
 	int				teaten;
 	long			lasteat;
 	long			showtime;
-	t_info			*status;
+	t_info			*shared;
 
 }				t_philos;
 
@@ -67,12 +68,14 @@ typedef struct s_iforks
 void	*philolife(void *arg);
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
-int		nap(long secs, int *imdead);
-void	inittask(t_info *info, int pnum);
+int		nap(long msecs, int *imdead);
+void	inittask(int argc, char **argv, t_info *info);
+void	pbirth(t_philos *philos, t_info *info);
 int		launchtime(t_philos *philo, t_iforks *iforks);
 int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);
+void	needfood(t_philos *philo);
 void	freeall(t_philos *philos);
 
 #endif

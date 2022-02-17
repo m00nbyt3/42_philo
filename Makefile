@@ -6,7 +6,7 @@
 #    By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/24 13:14:44 by ycarro            #+#    #+#              #
-#    Updated: 2022/02/08 12:39:06 by ycarro           ###   ########.fr        #
+#    Updated: 2022/02/17 13:03:33 by ycarro           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,8 +31,10 @@ INCLUDE :=  -I $(HDIR)
 HEADERFILES := include/philo.h
 
 SRCFILES := main.c \
-			utils.c \
-			time.c
+			controller.c \
+			launch.c \
+			time.c \
+			utils.c
 
 OBJFILES := $(SRCFILES:%.c=obj/%.o)
 

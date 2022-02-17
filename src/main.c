@@ -6,25 +6,22 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/17 12:19:31 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/17 15:12:31 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 void	*philolife(void *arg);
-void	inittask(t_info *info, int pnum);
-int		launchtime(t_philos *philo, t_iforks *iforks);
-int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
-void	timepassed(t_philos *philos);
-void	sprint(t_philos *philo, char *action);
+void	pbirth(t_philos *philos, t_info *info);
+void	inittask(int argc, char **argv, t_info *info);
+void	needfood(t_philos *philo);
 void	freeall(t_philos *philos);
 
-int	main(int argc, char const *argv[])
+int	main(int argc, char **argv)
 {
 	t_philos	*philos;
 	t_info		info;
-	int			pnum;
 	int			j;
 
 	if (argc < 5 || argc > 6)
@@ -32,32 +29,12 @@ int	main(int argc, char const *argv[])
 		printf("ERROR\n");
 		return (0);
 	}
-	pnum = ft_atoi(argv[1]);
-	info.ttdie = ft_atoi(argv[2]) * 1000;
-	info.tteat = ft_atoi(argv[3]);
-	info.ttsleep = ft_atoi(argv[4]);
-	if (argc == 6)
-		info.maxeat = ft_atoi(argv[5]);
-	else
-		info.maxeat = -1;
-	info.finish = 0;
-	philos = malloc((pnum) * sizeof(t_philos));
-	inittask(&info, pnum);
-	j = 0;
-	while (j < pnum)
-	{
-		philos[j].id = j;
-		philos[j].status = &info;
-		philos[j].teaten = info.maxeat;
-		usleep(10);
-		gettimeofday(&(info.ctime), NULL);
-		philos[j].lasteat = (info.ctime.tv_sec * 1000000) + info.ctime.tv_usec;
-		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
-		j++;
-	}
+	inittask(argc, argv, &info);
+	philos = malloc((info.pnum) * sizeof(t_philos));
+	pbirth(philos, &info);
 	timepassed(philos);
 	j = 0;
-	while (j < pnum)
+	while (j < info.pnum)
 	{
 		pthread_join(philos[j].th, 0);
 		j++;
@@ -66,43 +43,23 @@ int	main(int argc, char const *argv[])
 	return (0);
 }
 
-void	*philolife(void *arg)
-{
-	t_philos	*philo;
-	t_iforks	iforks;
-
-	philo = (t_philos *)arg;
-	iforks.left = philo->id;
-	if (philo->id == (philo->status->pnum - 1))
-		iforks.right = 0;
-	else
-		iforks.right = philo->id + 1;
-	iforks.tot = 0;
-	while (1)
-	{
-		if (philo->status->finish)
-			return (0);
-		if (launchtime (philo, &iforks))
-			return (0);
-		if (!philo->teaten)
-			break ;
-		sprint(philo, PSLEEP);
-		if (nap(philo->status->ttsleep, &philo->status->finish))
-			return (0);
-		sprint(philo, PTHINK);
-	}
-	return (0);
-}
-
-void	inittask(t_info *info, int pnum)
+void	inittask(int argc, char **argv, t_info *info)
 {
 	int	i;
 
-	info->pnum = pnum;
-	info->fork = malloc (pnum * sizeof(int));
-	info->mtx = malloc (pnum * sizeof(pthread_mutex_t));
+	info->pnum = ft_atoi(argv[1]);
+	info->ttdie = ft_atoi(argv[2]) * 1000;
+	info->tteat = ft_atoi(argv[3]);
+	info->ttsleep = ft_atoi(argv[4]);
+	if (argc == 6)
+		info->maxeat = ft_atoi(argv[5]);
+	else
+		info->maxeat = -1;
+	info->finish = 0;
+	info->fork = malloc (info->pnum * sizeof(int));
+	info->mtx = malloc (info->pnum * sizeof(pthread_mutex_t));
 	i = 0;
-	while (i < pnum)
+	while (i < info->pnum)
 	{
 		info->fork[i] = 1;
 		pthread_mutex_init(&info->mtx[i], 0);
@@ -113,114 +70,77 @@ void	inittask(t_info *info, int pnum)
 	info->inittime = ((info->ctime.tv_sec * 1000000) + info->ctime.tv_usec) / 1000;
 }
 
-int	launchtime(t_philos *philo, t_iforks *iforks)
+void	pbirth(t_philos *philos, t_info *info)
 {
-	iforks->tot = 0;
-	while (iforks->tot < 2)
+	int j;
+
+	j = 0;
+	while (j < info->pnum)
 	{
-		if (philo->status->finish)
-			return (1);
-		pthread_mutex_lock(&philo->status->mtx[iforks->left]);
-		if (philo->status->fork[iforks->left])
-		{
-			if (canieat(philo, &iforks->tot, iforks->right, iforks->left))
-			{
-				pthread_mutex_unlock(&philo->status->mtx[iforks->left]);
-				return (1);
-			}
-			if (iforks->tot == 2)
-				break ;
-		}
-		pthread_mutex_unlock(&philo->status->mtx[iforks->left]);
-		pthread_mutex_lock(&philo->status->mtx[iforks->right]);
-		if (philo->status->fork[iforks->right])
-		{
-			if (canieat(philo, &iforks->tot, iforks->left, iforks->right))
-			{
-				pthread_mutex_unlock(&philo->status->mtx[iforks->right]);
-				return (1);
-			}
-			if (iforks->tot == 2)
-				break ;
-		}
-		pthread_mutex_unlock(&philo->status->mtx[iforks->right]);
+		philos[j].id = j;
+		philos[j].shared = info;
+		philos[j].teaten = info->maxeat;
+		//nap(0.5, &philos[0].shared->finish);
+		usleep(50);
+		gettimeofday(&(info->ctime), NULL);
+		philos[j].lasteat = (info->ctime.tv_sec * 1000000) + info->ctime.tv_usec;
+		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
+		j++;
+	}
+}
+
+void	*philolife(void *arg)
+{
+	t_philos	*philo;
+	t_iforks	iforks;
+
+	philo = (t_philos *)arg;
+	iforks.left = philo->id;
+	if (philo->id == (philo->shared->pnum - 1))
+		iforks.right = 0;
+	else
+		iforks.right = philo->id + 1;
+	iforks.tot = 0;
+	while (1)
+	{
+		if (philo->shared->finish)
+			return (0);
+		needfood(philo);
+		if (launchtime (philo, &iforks))
+			return (0);
+		if (!philo->teaten)
+			break ;
+		sprint(philo, PSLEEP);
+		if (nap(philo->shared->ttsleep, &philo->shared->finish))
+			return (0);
+		sprint(philo, PTHINK);
 	}
 	return (0);
 }
 
-int	canieat(t_philos *philo, int *tot, int fstfork, int lstfork)
-{
-	sprint(philo, PTFORK);
-	philo->status->fork[lstfork] = 0;
-	(*tot)++;
-	if (*tot == 2)
-	{
-		sprint(philo, PEAT);
-		if (nap(philo->status->tteat, &philo->status->finish))
-			return (1);
-		gettimeofday(&(philo->status->ctime), NULL);
-		philo->lasteat = (philo->status->ctime.tv_sec * 1000000) + philo->status->ctime.tv_usec;
-		philo->status->fork[fstfork] = 1;
-		philo->status->fork[lstfork] = 1;
-		if (philo->teaten > 0)
-			philo->teaten--;
-		pthread_mutex_unlock(&philo->status->mtx[lstfork]);
-	}
-	return (0);
-}
-
-void	timepassed(t_philos *philos)
+void	needfood(t_philos *philo)
 {
 	int	i;
 	long	actual;
+	struct timeval	ctime;
 
 	while (1)
 	{
-		//nap(5 / 1000, &philos[0].status->finish);
 		i = 0;		
-		while (i < philos[0].status->pnum)
-		{
-			gettimeofday(&(philos[0].status->ctime), NULL);
-			actual = (philos[0].status->ctime.tv_sec * 1000000) + philos[0].status->ctime.tv_usec;
-			actual -= philos[i].lasteat;
-			if (actual >= philos[i].status->ttdie)
-			{
-				philos[i].status->finish = 1;
-				sprint(&philos[0], PDIE);
-				return ;
-			}
-			if (!philos[i].teaten)
-				return ;
-			i++;
-		}
+		gettimeofday(&ctime, NULL);
+		actual = (ctime.tv_sec * 1000000) + ctime.tv_usec;
+		actual -= philo->lasteat;
+		if ((philo->shared->ttdie + 50) > actual)
+			return ;
+		if (!philo->teaten)
+			return ;
+		i++;
 	}
-}
-
-void	sprint(t_philos *philo, char *action)
-{
-	pthread_mutex_lock(&philo->status->plock);
-	if (philo->status->finish && action[19] != 'd')
-	{
-		pthread_mutex_unlock(&philo->status->plock);
-		return ;
-	}
-	gettimeofday(&(philo->status->ctime), NULL);
-	philo->showtime = (((philo->status->ctime.tv_sec * 1000000) \
-	+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
-	printf(action, philo->showtime, philo->id);
-	pthread_mutex_unlock(&philo->status->plock);
 }
 
 void	freeall(t_philos *philos)
 {
-	//int	i;
-	//int	pnum;
-
-	free(philos[0].status->fork);
-	free(philos[0].status->mtx);
-	/*i = -1;
-	pnum = philos[0].status->pnum;
-	while (++i < pnum)
-		free(philos[i]);*/
+	free(philos[0].shared->fork);
+	free(philos[0].shared->mtx);
 	free(philos);
 }
