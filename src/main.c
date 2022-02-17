@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/16 13:31:57 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/17 12:19:31 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int		launchtime(t_philos *philo, t_iforks *iforks);
 int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);
+void	freeall(t_philos *philos);
 
 int	main(int argc, char const *argv[])
 {
@@ -34,7 +35,11 @@ int	main(int argc, char const *argv[])
 	pnum = ft_atoi(argv[1]);
 	info.ttdie = ft_atoi(argv[2]) * 1000;
 	info.tteat = ft_atoi(argv[3]);
-	info.ttsleep = ft_atoi(argv[4]);;
+	info.ttsleep = ft_atoi(argv[4]);
+	if (argc == 6)
+		info.maxeat = ft_atoi(argv[5]);
+	else
+		info.maxeat = -1;
 	info.finish = 0;
 	philos = malloc((pnum) * sizeof(t_philos));
 	inittask(&info, pnum);
@@ -43,7 +48,8 @@ int	main(int argc, char const *argv[])
 	{
 		philos[j].id = j;
 		philos[j].status = &info;
-		usleep(50);
+		philos[j].teaten = info.maxeat;
+		usleep(10);
 		gettimeofday(&(info.ctime), NULL);
 		philos[j].lasteat = (info.ctime.tv_sec * 1000000) + info.ctime.tv_usec;
 		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
@@ -56,6 +62,7 @@ int	main(int argc, char const *argv[])
 		pthread_join(philos[j].th, 0);
 		j++;
 	}
+	freeall(philos);
 	return (0);
 }
 
@@ -77,6 +84,8 @@ void	*philolife(void *arg)
 			return (0);
 		if (launchtime (philo, &iforks))
 			return (0);
+		if (!philo->teaten)
+			break ;
 		sprint(philo, PSLEEP);
 		if (nap(philo->status->ttsleep, &philo->status->finish))
 			return (0);
@@ -153,6 +162,8 @@ int	canieat(t_philos *philo, int *tot, int fstfork, int lstfork)
 		philo->lasteat = (philo->status->ctime.tv_sec * 1000000) + philo->status->ctime.tv_usec;
 		philo->status->fork[fstfork] = 1;
 		philo->status->fork[lstfork] = 1;
+		if (philo->teaten > 0)
+			philo->teaten--;
 		pthread_mutex_unlock(&philo->status->mtx[lstfork]);
 	}
 	return (0);
@@ -178,6 +189,8 @@ void	timepassed(t_philos *philos)
 				sprint(&philos[0], PDIE);
 				return ;
 			}
+			if (!philos[i].teaten)
+				return ;
 			i++;
 		}
 	}
@@ -196,4 +209,18 @@ void	sprint(t_philos *philo, char *action)
 	+ philo->status->ctime.tv_usec) / 1000) - philo->status->inittime;
 	printf(action, philo->showtime, philo->id);
 	pthread_mutex_unlock(&philo->status->plock);
+}
+
+void	freeall(t_philos *philos)
+{
+	//int	i;
+	//int	pnum;
+
+	free(philos[0].status->fork);
+	free(philos[0].status->mtx);
+	/*i = -1;
+	pnum = philos[0].status->pnum;
+	while (++i < pnum)
+		free(philos[i]);*/
+	free(philos);
 }

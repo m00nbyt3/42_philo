@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/16 11:57:21 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/02/17 12:12:10 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_info
 	int				tteat;
 	int				ttsleep;
 	long			ttdie;
+	int				maxeat;
 	int				finish;
 }				t_info;
 
@@ -48,6 +49,7 @@ typedef struct s_philos
 {
 	pthread_t		th;
 	int				id;
+	int				teaten;
 	long			lasteat;
 	long			showtime;
 	t_info			*status;
@@ -71,5 +73,6 @@ int		launchtime(t_philos *philo, t_iforks *iforks);
 int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);
+void	freeall(t_philos *philos);
 
 #endif
