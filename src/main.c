@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
+/*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/17 15:12:31 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/12 18:20:04 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,19 +73,27 @@ void	inittask(int argc, char **argv, t_info *info)
 void	pbirth(t_philos *philos, t_info *info)
 {
 	int j;
+	int	lap;
 
+	lap = 0;
 	j = 0;
 	while (j < info->pnum)
 	{
 		philos[j].id = j;
 		philos[j].shared = info;
 		philos[j].teaten = info->maxeat;
-		//nap(0.5, &philos[0].shared->finish);
-		usleep(50);
+		//usleep(300);
+		s_nap(10/100);
 		gettimeofday(&(info->ctime), NULL);
 		philos[j].lasteat = (info->ctime.tv_sec * 1000000) + info->ctime.tv_usec;
 		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
 		j++;
+		if (j >= info->pnum && lap == 3)
+		{
+			lap = 1;
+			j = 1;
+			s_nap(10/100);
+		}
 	}
 }
 
@@ -105,7 +113,6 @@ void	*philolife(void *arg)
 	{
 		if (philo->shared->finish)
 			return (0);
-		needfood(philo);
 		if (launchtime (philo, &iforks))
 			return (0);
 		if (!philo->teaten)
@@ -116,26 +123,6 @@ void	*philolife(void *arg)
 		sprint(philo, PTHINK);
 	}
 	return (0);
-}
-
-void	needfood(t_philos *philo)
-{
-	int	i;
-	long	actual;
-	struct timeval	ctime;
-
-	while (1)
-	{
-		i = 0;		
-		gettimeofday(&ctime, NULL);
-		actual = (ctime.tv_sec * 1000000) + ctime.tv_usec;
-		actual -= philo->lasteat;
-		if ((philo->shared->ttdie + 50) > actual)
-			return ;
-		if (!philo->teaten)
-			return ;
-		i++;
-	}
 }
 
 void	freeall(t_philos *philos)

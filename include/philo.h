@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycarro <ycarro@student.42.com>             +#+  +:+       +#+        */
+/*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/02/17 14:58:27 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/12 18:16:43 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,6 @@ void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);
 void	needfood(t_philos *philo);
 void	freeall(t_philos *philos);
+int		s_nap(long msecs);
 
 #endif
