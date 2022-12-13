@@ -6,13 +6,13 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/25 12:00:08 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/12 18:16:38 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/13 15:53:50 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	nap(long msecs, int *imdead)
+int	nap(long msecs, int *imdead, int towait)
 {
 	struct timeval	ctime;
 	long			orig;
@@ -23,7 +23,7 @@ int	nap(long msecs, int *imdead)
 	new = orig + msecs;
 	while (orig < new)
 	{
-		usleep(52);
+		usleep(towait);
 		if (*imdead)
 			return (1);
 		gettimeofday(&ctime, NULL);

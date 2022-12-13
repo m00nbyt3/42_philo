@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/13 15:10:59 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/13 15:51:30 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	*philolife(void *arg)
 		if (!philo->teaten)
 			break ;
 		sprint(philo, PSLEEP);
-		if (nap(philo->shared->ttsleep, &philo->shared->finish))
+		if (nap(philo->shared->ttsleep, &philo->shared->finish, philo->shared->pnum))
 			return (0);
 		sprint(philo, PTHINK);
 	}
@@ -117,7 +117,6 @@ void	*philolife(void *arg)
 
 void	freeall(t_philos *philos)
 {
-	free(philos[0].shared->fork);
 	free(philos[0].shared->mtx);
 	free(philos);
 }

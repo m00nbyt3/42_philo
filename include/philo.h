@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/13 14:47:59 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/13 15:51:54 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ typedef struct s_info
 	struct timeval	ctime;
 	long			inittime;
 	int				pnum;
-	int				*fork;
 	pthread_mutex_t	*mtx;
 	pthread_mutex_t	plock;
 	int				tteat;
@@ -59,7 +58,6 @@ typedef struct s_philos
 
 typedef struct s_iforks
 {
-	int	tot;
 	int	left;
 	int	right;
 }				t_iforks;
@@ -68,16 +66,14 @@ typedef struct s_iforks
 void	*philolife(void *arg);
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
-int		nap(long msecs, int *imdead);
+int		nap(long msecs, int *imdead, int towait);
+int		s_nap(long msecs);
 void	inittask(int argc, char **argv, t_info *info);
 void	pbirth(t_philos *philos, t_info *info);
 int		launchtime(t_philos *philo, t_iforks *iforks);
 int		eatnow(t_philos *philo);
-int		canieat(t_philos *philo, int *tot, int fstfork, int lstfork);
 void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);
-void	needfood(t_philos *philo);
 void	freeall(t_philos *philos);
-int		s_nap(long msecs);
 
 #endif
