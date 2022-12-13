@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 13:30:12 by ycarro            #+#    #+#             */
-/*   Updated: 2022/11/15 16:50:49 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/13 15:24:01 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void	sprint(t_philos *philo, char *action)
 		return ;
 	}
 	gettimeofday(&(philo->shared->ctime), NULL);
-	philo->showtime = (((philo->shared->ctime.tv_sec * 1000000) \
-	+ philo->shared->ctime.tv_usec) / 1000) - philo->shared->inittime;
+	philo->showtime = ((philo->shared->ctime.tv_sec * 1000) \
+	+ (philo->shared->ctime.tv_usec / 1000)) - philo->shared->inittime;
 	printf(action, philo->showtime, philo->id);
 	pthread_mutex_unlock(&philo->shared->plock);
 }

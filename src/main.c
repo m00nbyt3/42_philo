@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/12 18:20:04 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/13 15:10:59 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	inittask(int argc, char **argv, t_info *info)
 	int	i;
 
 	info->pnum = ft_atoi(argv[1]);
-	info->ttdie = ft_atoi(argv[2]) * 1000;
+	info->ttdie = ft_atoi(argv[2]);
 	info->tteat = ft_atoi(argv[3]);
 	info->ttsleep = ft_atoi(argv[4]);
 	if (argc == 6)
@@ -56,18 +56,16 @@ void	inittask(int argc, char **argv, t_info *info)
 	else
 		info->maxeat = -1;
 	info->finish = 0;
-	info->fork = malloc (info->pnum * sizeof(int));
 	info->mtx = malloc (info->pnum * sizeof(pthread_mutex_t));
 	i = 0;
 	while (i < info->pnum)
 	{
-		info->fork[i] = 1;
 		pthread_mutex_init(&info->mtx[i], 0);
 		i++;
 	}
 	pthread_mutex_init(&info->plock, 0);
 	gettimeofday(&(info->ctime), NULL);
-	info->inittime = ((info->ctime.tv_sec * 1000000) + info->ctime.tv_usec) / 1000;
+	info->inittime = ((info->ctime.tv_sec * 1000) + (info->ctime.tv_usec / 1000));
 }
 
 void	pbirth(t_philos *philos, t_info *info)
@@ -82,18 +80,11 @@ void	pbirth(t_philos *philos, t_info *info)
 		philos[j].id = j;
 		philos[j].shared = info;
 		philos[j].teaten = info->maxeat;
-		//usleep(300);
 		s_nap(10/100);
 		gettimeofday(&(info->ctime), NULL);
-		philos[j].lasteat = (info->ctime.tv_sec * 1000000) + info->ctime.tv_usec;
+		philos[j].lasteat = (info->ctime.tv_sec * 1000) + (info->ctime.tv_usec / 1000);
 		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
 		j++;
-		if (j >= info->pnum && lap == 3)
-		{
-			lap = 1;
-			j = 1;
-			s_nap(10/100);
-		}
 	}
 }
 
@@ -108,7 +99,6 @@ void	*philolife(void *arg)
 		iforks.right = 0;
 	else
 		iforks.right = philo->id + 1;
-	iforks.tot = 0;
 	while (1)
 	{
 		if (philo->shared->finish)
