@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 17:35:15 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/14 17:48:14 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	timepassed(t_philos *philos)
 			if (actual >= philos[i].shared->ttdie)
 			{
 				philos[i].shared->finish = 1;
-				sprint(&philos[0], PDIE);
+				sprint(&philos[i], PDIE);
 				return ;
 			}
 			if (!philos[i].teaten)

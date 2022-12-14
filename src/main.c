@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 17:20:02 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/14 17:55:02 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	main(int argc, char **argv)
 	j = 0;
 	while (j < info.pnum)
 	{
-		pthread_join(philos[j].th, 0);
+		pthread_detach(philos[j].th);
 		j++;
 	}
 	freeall(philos);
