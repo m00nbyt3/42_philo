@@ -6,7 +6,7 @@
 #    By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/26 15:57:18 by ycarro            #+#    #+#              #
-#    Updated: 2022/10/26 15:57:29 by ycarro           ###   ########.fr        #
+#    Updated: 2022/12/14 16:09:17 by ycarro           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ HEADERFILES := include/philo.h
 
 SRCFILES := main.c \
 			controller.c \
-			launch.c \
+			lunch.c \
 			time.c \
 			utils.c
 
