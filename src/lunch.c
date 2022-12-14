@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 16:12:43 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/14 16:20:32 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +17,27 @@ int	eatnow(t_philos *philo);
 
 int	lunchtime(t_philos *philo, t_iforks *iforks)
 {
+	int	fork1;
+	int	fork2;
+
 	if (philo->shared->finish)
 			return (1);
+	fork1 = iforks->right;
+	fork2 = iforks->left;
 	if (philo->id % 2)
 	{
-		pthread_mutex_lock(&philo->shared->mtx[iforks->left]);
-		sprint(philo, PTFORK);
-		pthread_mutex_lock(&philo->shared->mtx[iforks->right]);
-		sprint(philo, PTFORK);
-		sprint(philo, PEAT);
-		eatnow(philo);
-		pthread_mutex_unlock(&philo->shared->mtx[iforks->left]);
-		pthread_mutex_unlock(&philo->shared->mtx[iforks->right]);
+		fork1 = iforks->left;
+		fork2 = iforks->right;
 	}
-	else
-	{
-		pthread_mutex_lock(&philo->shared->mtx[iforks->right]);
-		sprint(philo, PTFORK);
-		pthread_mutex_lock(&philo->shared->mtx[iforks->left]);
-		sprint(philo, PTFORK);
-		sprint(philo, PEAT);
-		eatnow(philo);
-		pthread_mutex_unlock(&philo->shared->mtx[iforks->right]);
-		pthread_mutex_unlock(&philo->shared->mtx[iforks->left]);
-	}
+	pthread_mutex_lock(&philo->shared->mtx[fork1]);
+	sprint(philo, PTFORK);
+	pthread_mutex_lock(&philo->shared->mtx[fork2]);
+	sprint(philo, PTFORK);
+	sprint(philo, PEAT);
+	if (eatnow(philo))
+		return(1);
+	pthread_mutex_unlock(&philo->shared->mtx[fork1]);
+	pthread_mutex_unlock(&philo->shared->mtx[fork2]);
 	return (0);
 }
 
