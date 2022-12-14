@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 16:09:32 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/14 16:12:43 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	lunchtime(t_philos *philo, t_iforks *iforks);
 int	eatnow(t_philos *philo);
 
-int	launchtime(t_philos *philo, t_iforks *iforks)
+int	lunchtime(t_philos *philo, t_iforks *iforks)
 {
 	if (philo->shared->finish)
 			return (1);

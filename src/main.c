@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/13 15:51:30 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/14 16:12:16 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	*philolife(void *arg)
 	{
 		if (philo->shared->finish)
 			return (0);
-		if (launchtime (philo, &iforks))
+		if (lunchtime (philo, &iforks))
 			return (0);
 		if (!philo->teaten)
 			break ;
