@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 16:20:32 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/16 15:29:27 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	lunchtime(t_philos *philo, t_iforks *iforks)
 	int	fork2;
 
 	if (philo->shared->finish)
-			return (1);
+		return (1);
 	fork1 = iforks->right;
 	fork2 = iforks->left;
 	if (philo->id % 2)
@@ -35,18 +35,18 @@ int	lunchtime(t_philos *philo, t_iforks *iforks)
 	sprint(philo, PTFORK);
 	sprint(philo, PEAT);
 	if (eatnow(philo))
-		return(1);
+		return (1);
 	pthread_mutex_unlock(&philo->shared->mtx[fork1]);
 	pthread_mutex_unlock(&philo->shared->mtx[fork2]);
 	return (0);
 }
 
-
 int	eatnow(t_philos *philo)
 {
-	philo->lasteat = (philo->shared->ctime.tv_sec * 1000) + (philo->shared->ctime.tv_usec / 1000);
+	philo->lasteat = (philo->shared->ctime.tv_sec * 1000) \
+	+ (philo->shared->ctime.tv_usec / 1000);
 	if (nap(philo->shared->tteat, &philo->shared->finish, philo->shared->pnum))
-			return (1);
+		return (1);
 	if (philo->teaten > 0)
 		philo->teaten--;
 	return (0);

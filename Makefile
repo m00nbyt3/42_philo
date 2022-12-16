@@ -6,7 +6,7 @@
 #    By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/26 15:57:18 by ycarro            #+#    #+#              #
-#    Updated: 2022/12/14 16:09:17 by ycarro           ###   ########.fr        #
+#    Updated: 2022/12/16 15:21:24 by ycarro           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,11 +27,12 @@ SRCFILES := main.c \
 OBJFILES := $(SRCFILES:%.c=obj/%.o)
 
 CFLAGS := -Wall -Wextra -Werror $(INCLUDE)
+LFLAGS := -pthread -g3 -fsanitize=thread
 
 all: $(NAME)
 
 $(NAME): $(OBJFILES)
-	$(CC) $(OBJFILES) -o $@
+	$(CC) $(OBJFILES) -o $@ #$(LFLAGS)
 
 obj/%.o: src/%.c $(HEADERFILES)
 		@mkdir -p $(dir $@)

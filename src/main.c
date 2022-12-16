@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 17:55:02 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/16 15:31:10 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,13 @@ void	inittask(int argc, char **argv, t_info *info)
 	}
 	pthread_mutex_init(&info->plock, 0);
 	gettimeofday(&(info->ctime), NULL);
-	info->inittime = ((info->ctime.tv_sec * 1000) + (info->ctime.tv_usec / 1000));
+	info->inittime = ((info->ctime.tv_sec * 1000) \
+	+ (info->ctime.tv_usec / 1000));
 }
 
 void	pbirth(t_philos *philos, t_info *info)
 {
-	int j;
+	int	j;
 	int	lap;
 
 	lap = 0;
@@ -80,9 +81,10 @@ void	pbirth(t_philos *philos, t_info *info)
 		philos[j].id = j;
 		philos[j].shared = info;
 		philos[j].teaten = info->maxeat;
-		s_nap(10/100);
+		s_nap(10 / 100);
 		gettimeofday(&(info->ctime), NULL);
-		philos[j].lasteat = (info->ctime.tv_sec * 1000) + (info->ctime.tv_usec / 1000);
+		philos[j].lasteat = (info->ctime.tv_sec * 1000) \
+		+ (info->ctime.tv_usec / 1000);
 		pthread_create(&philos[j].th, 0, philolife, &philos[j]);
 		j++;
 	}
@@ -108,7 +110,8 @@ void	*philolife(void *arg)
 		if (!philo->teaten)
 			break ;
 		sprint(philo, PSLEEP);
-		if (nap(philo->shared->ttsleep, &philo->shared->finish, philo->shared->pnum))
+		if (nap(philo->shared->ttsleep, \
+		&philo->shared->finish, philo->shared->pnum))
 			return (0);
 		sprint(philo, PTHINK);
 	}

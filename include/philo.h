@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 17:18:52 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/16 15:26:15 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@
 # define PTFORK "%ld %d has taken a fork\n"	
 # define PSLEEP "%ld %d is sleeping\n"
 # define PTHINK "%ld %d is thinking\n"
-
-
 
 //Structs
 typedef struct s_info
