@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/16 15:31:10 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/16 16:53:45 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ int	main(int argc, char **argv)
 	j = 0;
 	while (j < info.pnum)
 	{
-		pthread_detach(philos[j].th);
+		if (info.maxeat != -1)
+			pthread_join(philos[j].th, 0);
+		else
+			pthread_detach(philos[j].th);
 		j++;
 	}
 	freeall(philos);
@@ -81,7 +84,6 @@ void	pbirth(t_philos *philos, t_info *info)
 		philos[j].id = j;
 		philos[j].shared = info;
 		philos[j].teaten = info->maxeat;
-		s_nap(10 / 100);
 		gettimeofday(&(info->ctime), NULL);
 		philos[j].lasteat = (info->ctime.tv_sec * 1000) \
 		+ (info->ctime.tv_usec / 1000);
@@ -114,6 +116,7 @@ void	*philolife(void *arg)
 		&philo->shared->finish, philo->shared->pnum))
 			return (0);
 		sprint(philo, PTHINK);
+		usleep(100);
 	}
 	return (0);
 }
