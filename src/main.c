@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/16 17:11:24 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/20 16:04:06 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,12 @@ void	inittask(int argc, char **argv, t_info *info)
 	else
 		info->maxeat = -1;
 	info->finish = 0;
+	info->forks = malloc(info->pnum * sizeof(int));
 	info->mtx = malloc (info->pnum * sizeof(pthread_mutex_t));
 	i = 0;
 	while (i < info->pnum)
 	{
+		info->forks[i] = 1;
 		pthread_mutex_init(&info->mtx[i], 0);
 		i++;
 	}
@@ -116,13 +118,14 @@ void	*philolife(void *arg)
 		&philo->shared->finish, philo->shared->pnum))
 			return (0);
 		sprint(philo, PTHINK);
-		usleep(100);
+		//usleep(100);
 	}
 	return (0);
 }
 
 void	freeall(t_philos *philos)
 {
+	free(philos->shared->forks);
 	free(philos[0].shared->mtx);
 	free(philos);
 }

@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/16 15:26:15 by ycarro           ###   ########.fr       */
+/*   Updated: 2022/12/20 12:42:22 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_info
 	struct timeval	ctime;
 	long			inittime;
 	int				pnum;
+	int				*forks;
 	pthread_mutex_t	*mtx;
 	pthread_mutex_t	plock;
 	int				tteat;
