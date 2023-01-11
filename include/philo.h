@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/20 12:42:22 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/11 15:21:28 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ int		s_nap(long msecs);
 void	inittask(int argc, char **argv, t_info *info);
 void	pbirth(t_philos *philos, t_info *info);
 int		lunchtime(t_philos *philo, t_iforks *iforks);
+int		getfork(t_philos *philo, t_iforks *iforks, int *total);
 int		eatnow(t_philos *philo);
 void	timepassed(t_philos *philos);
 void	sprint(t_philos *philo, char *action);

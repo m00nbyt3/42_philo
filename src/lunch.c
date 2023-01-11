@@ -6,83 +6,57 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/20 16:11:13 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/11 15:21:11 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 int	lunchtime(t_philos *philo, t_iforks *iforks);
+int	getfork(t_philos *philo, t_iforks *iforks, int *total);
 int	eatnow(t_philos *philo);
-
-int	lunchtime_old(t_philos *philo, t_iforks *iforks)
-{
-	int	fork1;
-	int	fork2;
-
-	if (philo->shared->finish)
-		return (1);
-	fork1 = iforks->right;
-	fork2 = iforks->left;
-	if (philo->id % 2)
-	{
-		fork1 = iforks->left;
-		fork2 = iforks->right;
-	}
-	pthread_mutex_lock(&philo->shared->mtx[fork1]);
-	sprint(philo, PTFORK);
-	pthread_mutex_lock(&philo->shared->mtx[fork2]);
-	sprint(philo, PTFORK);
-	sprint(philo, PEAT);
-	if (eatnow(philo))
-		return (1);
-	pthread_mutex_unlock(&philo->shared->mtx[fork1]);
-	pthread_mutex_unlock(&philo->shared->mtx[fork2]);
-	return (0);
-}
 
 int	lunchtime(t_philos *philo, t_iforks *iforks)
 {
 	int	total;
+	int	res;
 
 	if (philo->shared->finish)
 		return (1);
 	total = 0;
-	while(total != 2)
+	res = 0;
+	while (total != 2)
 	{
 		usleep(10);
-		if (philo->shared->forks[iforks->left] == 1)
-		{
-			pthread_mutex_lock(&philo->shared->mtx[iforks->left]);
-			sprint(philo, PTFORK);
-			philo->shared->forks[iforks->left] = 0;
-			total++;
-			pthread_mutex_unlock(&philo->shared->mtx[iforks->left]);
-			if (total == 2)
-			{
-				if (eatnow(philo))
-					return (1);
-				philo->shared->forks[iforks->left] = 1;
-				philo->shared->forks[iforks->right] = 1;
-				break ;
-			}
-		}
-		if (philo->shared->forks[iforks->right] == 1)
-		{
-			pthread_mutex_lock(&philo->shared->mtx[iforks->right]);
-			sprint(philo, PTFORK);
-			philo->shared->forks[iforks->right] = 0;
-			total++;
-			pthread_mutex_unlock(&philo->shared->mtx[iforks->right]);
-			if (total == 2)
-			{
-				if (eatnow(philo))
-					return (1);
-				philo->shared->forks[iforks->left] = 1;
-				philo->shared->forks[iforks->right] = 1;
-				break ;
-			}
-		}
+		res = getfork(philo, iforks, &total);
+		if (res == 1)
+			return (1);
+		if (res == 2)
+			break ;
+	}
+	return (0);
+}
+
+int	getfork(t_philos *philo, t_iforks *iforks, int *total)
+{
+	int	fork;
+
+	if (philo->shared->forks[iforks->left] == 1)
+		fork = iforks->left;
+	if (philo->shared->forks[iforks->right] == 1)
+		fork = iforks->right;
+	pthread_mutex_lock(&philo->shared->mtx[fork]);
+	sprint(philo, PTFORK);
+	philo->shared->forks[fork] = 0;
+	(*total)++;
+	pthread_mutex_unlock(&philo->shared->mtx[fork]);
+	if (*total == 2)
+	{
+		if (eatnow(philo))
+			return (1);
+		philo->shared->forks[iforks->left] = 1;
+		philo->shared->forks[iforks->right] = 1;
+		return (2);
 	}
 	return (0);
 }

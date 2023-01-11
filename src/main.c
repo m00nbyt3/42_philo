@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/20 16:04:06 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/11 14:12:56 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,6 @@ void	*philolife(void *arg)
 		&philo->shared->finish, philo->shared->pnum))
 			return (0);
 		sprint(philo, PTHINK);
-		//usleep(100);
 	}
 	return (0);
 }
