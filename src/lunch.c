@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/11 15:21:11 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/13 16:00:36 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int	lunchtime(t_philos *philo, t_iforks *iforks)
 	res = 0;
 	while (total != 2)
 	{
-		usleep(10);
 		res = getfork(philo, iforks, &total);
 		if (res == 1)
 			return (1);
@@ -41,10 +40,15 @@ int	getfork(t_philos *philo, t_iforks *iforks, int *total)
 {
 	int	fork;
 
-	if (philo->shared->forks[iforks->left] == 1)
-		fork = iforks->left;
 	if (philo->shared->forks[iforks->right] == 1)
 		fork = iforks->right;
+	else if (philo->shared->forks[iforks->left] == 1)
+		fork = iforks->left;
+	else
+		return (0);
+	if (philo->shared->forks[iforks->left] == 1 && \
+		philo->id == (philo->shared->pnum - 1))
+		fork = iforks->left;
 	pthread_mutex_lock(&philo->shared->mtx[fork]);
 	sprint(philo, PTFORK);
 	philo->shared->forks[fork] = 0;
