@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 13:30:12 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/14 17:55:14 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/16 16:00:56 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
+int		isnum(int argc, char **argv);
 void	sprint(t_philos *philo, char *action);
 
 int	ft_atoi(const char *str)
@@ -48,6 +49,26 @@ int	ft_isdigit(int c)
 	return (1);
 }
 
+int	isnum(int argc, char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (i < argc)
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
 void	sprint(t_philos *philo, char *action)
 {
 	pthread_mutex_lock(&philo->shared->plock);
@@ -59,6 +80,6 @@ void	sprint(t_philos *philo, char *action)
 	gettimeofday(&(philo->shared->ctime), NULL);
 	philo->showtime = ((philo->shared->ctime.tv_sec * 1000) \
 	+ (philo->shared->ctime.tv_usec / 1000)) - philo->shared->inittime;
-	printf(action, philo->showtime, philo->id);
+	printf(action, philo->showtime, (philo->id + 1));
 	pthread_mutex_unlock(&philo->shared->plock);
 }
