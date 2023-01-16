@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:34:58 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/11 15:21:28 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/16 14:41:11 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ typedef struct s_iforks
 void	*philolife(void *arg);
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
+int		isnum(int argc, char **argv);
 int		nap(long msecs, int *imdead, int towait);
 int		s_nap(long msecs);
 void	inittask(int argc, char **argv, t_info *info);

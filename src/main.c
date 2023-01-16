@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/13 16:00:42 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/16 14:41:17 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ int	main(int argc, char **argv)
 	t_info		info;
 	int			j;
 
-	if (argc < 5 || argc > 6)
+	if (argc < 5 || argc > 6 || !isnum(argc, argv))
 	{
-		printf("ERROR\n");
-		return (0);
+		printf("ERROR: Invalid arguments\n");
+		return (1);
 	}
 	inittask(argc, argv, &info);
 	philos = malloc((info.pnum) * sizeof(t_philos));

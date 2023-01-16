@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 13:30:12 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/16 14:22:11 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/16 14:44:32 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int		ft_atoi(const char *str);
 int		ft_isdigit(int c);
+int		isnum(int argc, char **argv);
 void	sprint(t_philos *philo, char *action);
 
 int	ft_atoi(const char *str)
@@ -45,6 +46,26 @@ int	ft_isdigit(int c)
 {
 	if (c < '0' || c > '9')
 		return (0);
+	return (1);
+}
+
+int	isnum(int argc, char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (i < argc)
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+				return (0);
+			j++;
+		}
+		i++;
+	}
 	return (1);
 }
 
