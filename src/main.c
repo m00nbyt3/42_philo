@@ -6,16 +6,15 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/16 16:01:57 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/17 15:14:17 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*philolife(void *arg);
-void	pbirth(t_philos *philos, t_info *info);
 void	inittask(int argc, char **argv, t_info *info);
-void	needfood(t_philos *philo);
+void	pbirth(t_philos *philos, t_info *info);
+void	*philolife(void *arg);
 void	freeall(t_philos *philos);
 
 int	main(int argc, char **argv)
@@ -24,7 +23,7 @@ int	main(int argc, char **argv)
 	t_info		info;
 	int			j;
 
-	if (argc < 5 || argc > 6 || !isnum(argc, argv))
+	if (argc < 5 || argc > 6 || !isnum(argc, argv) || ft_atoi(argv[1]) == 0)
 	{
 		printf("ERROR: Invalid Argument\n");
 		return (0);

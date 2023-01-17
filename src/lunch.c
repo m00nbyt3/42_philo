@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/17 12:31:13 by ycarro            #+#    #+#             */
-/*   Updated: 2022/12/16 15:29:27 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/17 15:14:26 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	lunchtime(t_philos *philo, t_iforks *iforks)
 	int	fork1;
 	int	fork2;
 
-	if (philo->shared->finish)
+	if (philo->shared->finish || !philo->teaten)
 		return (1);
 	fork1 = iforks->right;
 	fork2 = iforks->left;
