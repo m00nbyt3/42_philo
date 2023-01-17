@@ -6,7 +6,7 @@
 /*   By: ycarro <ycarro@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/24 12:33:38 by ycarro            #+#    #+#             */
-/*   Updated: 2023/01/17 15:14:17 by ycarro           ###   ########.fr       */
+/*   Updated: 2023/01/17 15:36:18 by ycarro           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int	main(int argc, char **argv)
 	t_info		info;
 	int			j;
 
-	if (argc < 5 || argc > 6 || !isnum(argc, argv) || ft_atoi(argv[1]) == 0)
+	if (argc < 5 || argc > 6 || !isnum(argc, argv) || \
+		ft_atoi(argv[1]) == 0 || ft_atoi(argv[2]) == 0)
 	{
 		printf("ERROR: Invalid Argument\n");
 		return (0);
